@@ -1,0 +1,8 @@
+---
+# Main playbook to provision VM
+
+- hosts: all
+  sudo: yes
+  roles:
+    - common
+    - web_server

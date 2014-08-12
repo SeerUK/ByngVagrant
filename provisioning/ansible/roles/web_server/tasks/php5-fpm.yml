@@ -1,0 +1,43 @@
+---
+- name: Install PHP5-FPM
+  apt: name={{ item }} state=present
+  with_items:
+  - php5
+  - php5-common
+  - php5-curl
+  - php5-dev
+  - php5-fpm
+  - php5-gd
+  - php5-json
+  - php5-mcrypt
+  - php5-memcached
+  - php5-mysql
+  - php5-xdebug
+  - php-apc
+  notify:
+  - Restart Nginx
+  - Restart PHP5-FPM
+
+- name: Install PHP5-FPM Configuration
+  template: src=../templates/php5-fpm-php.ini.j2 dest=/etc/php5/fpm/php.ini owner=root group=root
+  notify:
+  - Restart Nginx
+  - Restart PHP5-FPM
+
+- name: Install PHP5-FPM Pool Configuration
+  template: src='../templates/www.conf.j2' dest='/etc/php5/fpm/pool.d/www.conf'
+  notify:
+  - Restart Nginx
+  - Restart PHP5-FPM
+
+- name: Install Nginx Default Virtual Host
+  template: src='../templates/default-fpm.j2' dest='/etc/nginx/sites-available/default'
+  notify:
+  - Restart Nginx
+  - Restart PHP5-FPM
+
+- name: Enable Nginx Default Virtual Host
+  file: src=/etc/nginx/sites-available/default dest=/etc/nginx/sites-enabled/default state=link
+  notify:
+  - Restart Nginx
+  - Restart PHP5-FPM

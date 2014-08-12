@@ -1,0 +1,16 @@
+---
+- name: Install MySQL
+  apt: name={{ item }} state=present
+  with_items:
+  - mysql-client
+  - mysql-server
+
+- name: Install MySQL User tifa
+  mysql_user: name=tifa host=% password= priv=*.*:ALL,GRANT state=present
+  notify:
+  - Restart MySQL
+
+- name: Install MySQL Config Overrides
+  template: src=../templates/mysql-000-bind-address.cnf.j2 dest=/etc/mysql/conf.d/000-bind-address.cnf owner=root group=root
+  notify:
+  - Restart MySQL
